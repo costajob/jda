@@ -7,7 +7,7 @@ module Jda
 
     attr_reader :files, :cache
 
-    def initialize(files: [])
+    def initialize(files:)
       @files = files
       @cache = {}
     end
