@@ -31,7 +31,7 @@ module Jda
 
     def report
       @cache.each do |file, thread|
-        report_file = "#{File.basename(file, ".txt")}_report.csv"
+        report_file = "../../reports/#{File.basename(file, ".txt")}_report.csv"
         Thread.new do
           CSV.open(report_file, "w") do |report|
             thread.value.each do |row|

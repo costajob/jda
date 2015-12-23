@@ -5,6 +5,7 @@
   * [Format](#format)
   * [Parsing](#parsing)
   * [Filtering](#filtering)
+  * [Reporting](#reporting)
 
 ## Scope
 The scope of this library is to provide utility funcions over the JDA stock files.
@@ -20,7 +21,35 @@ JDA is the file format used to represent stock data for the www.gucci.com site.
 ### Format
 JDA file is a text files formatted by using comma separated values. The column are
 the following:
-
 | sku | store_code | store_name | on_hand | on_order | in_transit | department_code | department_name | vendor_code | style | color | size_code | description | price | markdown_flag | sale_date | target_stock_level | check_digit |
 
+### Parsing
+The standard Ruby's CSV library is used to parse the JDA files. 
+The libary allow to specify multiple JDA files at once: each parsing happens inside a separated thread of execution to speed up the whole process.
 
+Here's the main interface from `bundle console`:
+```ruby
+files = Dir[<where-JDA-unarchived-files-are>/*.txt] # list all JDA files into a directory
+parser = Jda::Parser::new(files: files) # create a new parser instance
+parser.read_all # execute one thread for each parsed file
+```
+
+### Filtering
+The library assumes you are going to filter JDA data by one of the following:
+* skus: just consider the provided list of SKUs
+* store codes: filter only the specified store codes
+* markdown flag: extract only the skus with markdown flag set to 'Y'
+
+Here's the API:
+```ruby
+parser.filter!(skus: %w[800907768 800968214], stores: %w[21400 20102]) # extract only the specified two skus for the provided two store codes, keep in mind the parsed results are changed in place to spare memory
+```
+
+### Reporting
+After you've filtered JDA results you might be interested in save them somewhere.
+The report method just create a separate files into the *reports* folder for each of the parsed JDA file.
+
+Here's how to generate report files:
+```ruby
+`parser.report # create a report file by using threads to write to them
+```
