@@ -3,6 +3,7 @@ require "csv"
 module Jda
   class Parser
 
+    ROOT = File.expand_path("../../..", __FILE__)
     OPTIONS = { quote_char: '"', col_sep: ",", row_sep: :auto, encoding: "windows-1251:utf-8" }
 
     attr_reader :files, :cache
@@ -31,7 +32,7 @@ module Jda
 
     def report
       @cache.each do |file, thread|
-        report_file = "../../reports/#{File.basename(file, ".txt")}_report.csv"
+        report_file = "#{ROOT}/reports/#{File.basename(file, ".txt")}.csv"
         Thread.new do
           CSV.open(report_file, "w") do |report|
             thread.value.each do |row|
