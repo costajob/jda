@@ -51,5 +51,5 @@ The report method just create a separate files into the *reports* folder for eac
 
 Here's how to generate report files:
 ```ruby
-`parser.report # create a report file by using threads to write to them
+parser.report # create a report file by using threads to write to them
 ```
