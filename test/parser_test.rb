@@ -40,7 +40,7 @@ describe Jda do
       parser.cache.keys.must_equal parser.feeds
     end
 
-    describe "#filter! and report" do
+    describe "#filter!" do
       let(:parser) { Jda::Parser::new(files: [ebuseu.path]) }
       before { ebuseu.rewind }
 
@@ -77,13 +77,6 @@ describe Jda do
         parser.feeds.each do |feed|
           parser.cache[feed].value.size.must_equal 1
         end
-      end
-
-      it "must generate the report" do
-        parser.feeds do |feed| 
-          mock(CSV).open("#{feed.basename}.csv", "w")
-        end
-        parser.report
       end
     end
   end
