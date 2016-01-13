@@ -1,5 +1,6 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
+import "tasks/jda.rake"
 
 Rake::TestTask.new(:test) do |t|
   t.libs << "test"
