@@ -10,11 +10,12 @@ namespace :jda do
       skus = ENV.fetch("skus", "").split(",").map!(&:strip)
       stores = ENV.fetch("stores", "").split(",").map!(&:strip)
       md_flag = !!ENV["md_flag"]
-      puts "Filtering data on:"
-      puts "\t skus: #{skus.inspect}"
-      puts "\t stores: #{stores.inspect}"
-      puts "\t md_flag: #{md_flag.inspect}"
-      puts "\nProcessing #{files.size} feeds..."
+      puts "Processing the following feeds:"
+      puts parser.feeds.map { |feed| "\t #{feed.name}" }
+      puts "Data filtering on:",
+        "\t skus: #{skus.inspect}",
+        "\t stores: #{stores.inspect}",
+        "\t md_flag: #{md_flag.inspect}"
       parser.filter!(skus: skus, stores: stores, md_flag: md_flag)
       parser.report
     end
