@@ -21,4 +21,9 @@ namespace :jda do
     end
     puts "Finished in #{tms.real.round(2)} seconds, find reports here: #{File.expand_path("../..", __FILE__)}/reports"
   end
+
+  desc "Clean created reports"
+  task :clean do
+    Dir["/vagrant/reports/*.csv"].each { |f| File.delete(f) }
+  end
 end
