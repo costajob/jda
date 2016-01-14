@@ -56,12 +56,14 @@ parser.report # create a report file by using threads to write to them
 ```
 
 ### Rake Task
-In order to speed up JDA filtering and reporting a Rake task is available:
+In order to speed up JDA filtering and reporting a Rake task is available.
+
+#### Examples
+Check JDA feeds into the /jda/finished folder, by filtering on specified skus, store IDs:
 ```ruby
-# check JDA feeds into the /jda/finished folder, by filtering on specified skus, store IDs
 rake jda:report root=/jda/finished skus=806564619,805254740 stores=20201,20401,21501
 ```
+Check JDA feeds into the /jda default folder, by filtering by store ID and markdown flag (if specified is considered true)
 ```ruby
-# check JDA feeds into the /jda default folder, by filtering by markdown flag (if specified is considered true)
-rake jda:report md_flag=Y
+rake jda:report stores=21400 md_flag=Y
 ```
