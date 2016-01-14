@@ -63,7 +63,7 @@ Check JDA feeds into the /jda/finished folder, by filtering on specified skus, s
 ```ruby
 rake jda:report root=/jda/finished skus=806564619,805254740 stores=20201,20401,21501
 ```
-Check JDA feeds into the /jda default folder, by filtering by store ID and markdown flag (if specified is considered true)
+Check JDA feeds into the /jda default folder, by filtering by store ID and markdown flag (if specified is considered true, no matter the value):
 ```ruby
 rake jda:report stores=21400 md_flag=Y
 ```
