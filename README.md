@@ -7,6 +7,8 @@
   * [Filtering](#filtering)
   * [Reporting](#reporting)
   * [Rake Task](#rake-task)
+    * [Report](#report)
+    * [Clean](#clean)
 
 ## Scope
 The scope of this library is to provide utility funcions over the JDA stock files.
@@ -58,7 +60,7 @@ parser.report # create a report file by using threads to write to them
 ### Rake Task
 In order to speed up JDA filtering and reporting a Rake task is available.
 
-#### Examples
+#### Report
 Check JDA feeds into the /jda/finished folder, by filtering on specified skus, store IDs:
 ```ruby
 rake jda:report root=/jda/finished skus=806564619,805254740 stores=20201,20401,21501
@@ -66,4 +68,9 @@ rake jda:report root=/jda/finished skus=806564619,805254740 stores=20201,20401,2
 Check JDA feeds into the /jda default folder, by filtering by store ID and markdown flag (if specified is considered true, no matter the value):
 ```ruby
 rake jda:report stores=21400 md_flag=Y
+```
+#### Clean
+Clean the generated reports with the following commands:
+```ruby
+rake jda:clean
 ```
