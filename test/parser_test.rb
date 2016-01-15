@@ -1,7 +1,7 @@
 require "test_helper"
 require "jda/parser"
 
-describe Jda do
+describe Jda::Parser do
   let(:ebuseu) { Tempfile.new(["ebuseu", ".txt"]) << %Q{800907712  ,20102  ,"Milano Montenapoleone         ",0        ,4        ,0        ,100  ,"HANDBAGS                 ",1       ,"115003F40IR    ",1000  ,"0099","1000/ /AUSTIN MED BINOCHE ORIG",329.00         ,"Y",60701   ,0      ,1
 800907768  ,20102  ,"Milano Montenapoleone         ",0        ,6        ,0        ,100  ,"HANDBAGS                 ",1       ,"114923F40KG    ",9643  ,"0099","9643/ /CHAIN MINI FLAP ORIG GG",301.00         ,"",70107   ,0      ,6
 800968214  ,21400  ,"WH E-Commerce                 ",0        ,39       ,0        ,100  ,"HANDBAGS                 ",1       ,"120134F40KG    ",9643  ,"0099","9643/ /CHAIN MED FLAP CHAIN OR",378.00         ,"Y",70107   ,0      ,8
@@ -13,70 +13,48 @@ describe Jda do
 800907768  ,20315  ,"Milano Montenapoleone         ",0        ,4        ,0        ,100  ,"HANDBAGS                 ",1       ,"140274F40IR    ",9643  ,"0099","9643/ /ECLIPSE MED ZIP TOP TOT",409.50         ,"Y",60701   ,0      ,7
 801613068  ,20162  ,"Verona                        ",0        ,14       ,0        ,100  ,"HANDBAGS                 ",1       ,"141576F4FXG    ",1000  ,"0099","1000/ /JACKIE SM HOBO ORIG GG ",294.00         ,"Y",70707   ,0      ,1} }
 
-  describe Jda::Feed do
-    let(:gz) { Jda::Feed::new("/jda/ebuscz-20160112083201.tgz") }
-    let(:txt) { Jda::Feed::new("/jda/ebuscz-import.txt") }
-
-    it "must detect extension" do
-      gz.ext.must_equal ".tgz"
-      txt.ext.must_equal ".txt"
-    end
-
-    it "must detect tar gz files" do
-      assert gz.tar_gz?
-      refute txt.tar_gz?
-    end
-
-    it "must get the basename" do
-      gz.basename.must_equal "ebuscz-20160112083201"
-      txt.basename.must_equal "ebuscz-import"
-    end
+  it "must set cache for read data" do
+    stub(Thread).new { [] }
+    parser = Jda::Parser::new(files: [ebuseu.path])
+    parser.cache.keys.must_equal parser.feeds
   end
 
-  describe Jda::Parser do
-    it "must set cache for read data" do
-      stub(Thread).new { [] }
-      parser = Jda::Parser::new(files: [ebuseu.path])
-      parser.cache.keys.must_equal parser.feeds
+  describe "#filter!" do
+    let(:parser) { Jda::Parser::new(files: [ebuseu.path]) }
+    before { ebuseu.rewind }
+
+    it "must filter nothing with default values" do
+      parser.filter!
+      parser.feeds.each do |feed|
+        parser.cache[feed].value.size.must_equal 10
+      end
     end
 
-    describe "#filter!" do
-      let(:parser) { Jda::Parser::new(files: [ebuseu.path]) }
-      before { ebuseu.rewind }
-
-      it "must filter nothing with default values" do
-        parser.filter!
-        parser.feeds.each do |feed|
-          parser.cache[feed].value.size.must_equal 10
-        end
+    it "must filter by skus" do
+      parser.filter!(skus: %w[800907768 801613068])
+      parser.feeds.each do |feed|
+        parser.cache[feed].value.size.must_equal 3
       end
+    end
 
-      it "must filter by skus" do
-        parser.filter!(skus: %w[800907768 801613068])
-        parser.feeds.each do |feed|
-          parser.cache[feed].value.size.must_equal 3
-        end
+    it "must filter by store codes" do
+      parser.filter!(stores: %w[21400 20162 20315])
+      parser.feeds.each do |feed|
+        parser.cache[feed].value.size.must_equal 4
       end
+    end
 
-      it "must filter by store codes" do
-        parser.filter!(stores: %w[21400 20162 20315])
-        parser.feeds.each do |feed|
-          parser.cache[feed].value.size.must_equal 4
-        end
+    it "must filter by markdown flag" do
+      parser.filter!(md_flag: true)
+      parser.feeds.each do |feed|
+        parser.cache[feed].value.size.must_equal 5
       end
+    end
 
-      it "must filter by markdown flag" do
-        parser.filter!(md_flag: true)
-        parser.feeds.each do |feed|
-          parser.cache[feed].value.size.must_equal 5
-        end
-      end
-
-      it "must combine filters" do
-        parser.filter!(skus: %w[800907768], stores: %w[20102 20315], md_flag: true)
-        parser.feeds.each do |feed|
-          parser.cache[feed].value.size.must_equal 1
-        end
+    it "must combine filters" do
+      parser.filter!(skus: %w[800907768], stores: %w[20102 20315], md_flag: true)
+      parser.feeds.each do |feed|
+        parser.cache[feed].value.size.must_equal 1
       end
     end
   end
