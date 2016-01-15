@@ -70,7 +70,7 @@ Check JDA feeds into the /jda default folder, by filtering by store ID and markd
 rake jda:report stores=21400 md_flag=Y
 ```
 #### Clean
-Clean the generated reports with the following commands:
+Clean the generated reports with the following command:
 ```ruby
 rake jda:clean
 ```
