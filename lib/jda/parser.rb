@@ -11,6 +11,7 @@ module Jda
     def initialize(files:)
       @feeds = files.map! { |name| Feed::new(name) }
       @cache = {}
+      @reports = []
       read_all
     end
     
@@ -27,12 +28,15 @@ module Jda
 
     def report
       @cache.each do |feed, thread|
-        report_file = "#{ROOT}/reports/#{feed.basename}.csv"
-        CSV.open(report_file, "w") do |report|
-          thread.value.each do |row|
-            report << row
+        @reports << Thread::new do
+          report_file = "#{ROOT}/reports/#{feed.basename}.csv"
+          CSV.open(report_file, "w") do |report|
+            thread.value.each do |row|
+              report << row
+            end
           end
         end
+        @reports.each(&:value)
       end
     end
     
