@@ -1,51 +1,37 @@
-require "csv"
 require "jda/feed"
+require "jda/filter"
+require "jda/report"
 
 module Jda
   class Parser
-    ROOT = File.expand_path("../../..", __FILE__)
-    OPTIONS = { quote_char: '"', col_sep: ",", row_sep: :auto, encoding: "windows-1251:utf-8" }
+    class InvalidFeedPath < ArgumentError; end
 
-    attr_reader :feeds, :cache
-
-    def initialize(files:)
-      @feeds = files.map! { |name| Feed::new(name) }
-      @cache = {}
-      @reports = []
-      read_all
-    end
-    
-    def filter!(skus: [], stores: [], md_flag: false)
-      @cache.each do |feed, thread|
-        thread.value.select! do |row|
-          skus_cond = skus.empty? ? true : skus.include?(row[0].strip!)
-          stores_cond = stores.empty? ? true : stores.include?(row[1].strip!)
-          md_flag_cond = md_flag ? row[14] == "Y" : true
-          skus_cond && stores_cond && md_flag_cond
-        end
-      end
+    def initialize(dir:, filters:)
+      fail InvalidFeedPath unless File.exists?(dir)
+      @dir = dir
+      @filters = remove_empty(filters)
     end
 
     def report
-      @cache.each do |feed, thread|
-        @reports << Thread::new do
-          report_file = "#{ROOT}/reports/#{feed.basename}.csv"
-          CSV.open(report_file, "w") do |report|
-            thread.value.each do |row|
-              report << row
-            end
-          end
+      feeds.map! do |feed|
+        data = feed.read()
+        data.select! do |row|
+          @filters.all? { |filter| filter.match?(row) } 
         end
-        @reports.each(&:value)
+        Report::new(name: feed.basename, data: data)
       end
     end
-    
+
     private
 
-    def read_all
-      @feeds.each do |feed|
-        @cache[feed] = Thread::new { CSV.parse(feed.data, OPTIONS) }
-      end
+    def feeds
+      @feeds ||= Dir["#{@dir}/*"]
+        .select { |f| File.file?(f) }
+        .map! { |name| Feed::new(name: name) }
+    end
+
+    def remove_empty(filters)
+      Array(filters).reject { |filter| filter.empty? }
     end
   end
 end

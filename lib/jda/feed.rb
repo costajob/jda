@@ -1,33 +1,44 @@
+require "csv"
 require "zlib"
 require "rubygems/package"
 
 module Jda
-  Feed = Struct::new(:name) do
-    TAR_GZ = %w[.tar.gz .tgz]
+  class Feed
+    TGZ = %w[.tar.gz .tgz]
+    OPTIONS = { quote_char: '"', col_sep: ",", row_sep: :auto, encoding: "windows-1251:utf-8" }
 
-    def ext
-      @ext ||= File.extname(self.name)
+    class InvalidTGZError < ArgumentError; end
+
+    def initialize(name:)
+      @name = name
     end
 
     def basename
-      @basename ||= File.basename(self.name, ext)
+      @basename ||= File.basename(@name, ext)
     end
 
-    def data
-      return File.read(self.name) unless tar_gz?
-      data = nil
-      File.open(self.name, "rb") do |file|
+    def read
+      fail InvalidTGZError unless tgz?
+      data = []
+      File.open(@name, "rb") do |file|
         Zlib::GzipReader.wrap(file) do |gz|
           Gem::Package::TarReader.new(gz) do |tar|
-            data = tar.each.first.read
+            csv = tar.each.first.read
+            data = CSV.parse(csv, OPTIONS)
           end
         end
       end
       data
     end
 
-    def tar_gz?
-      TAR_GZ.include?(ext)
+    private
+
+    def tgz?
+      TGZ.include?(ext)
+    end
+
+    def ext
+      @ext ||= File.extname(@name)
     end
   end
 end
