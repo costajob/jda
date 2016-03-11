@@ -7,21 +7,14 @@ namespace :jda do
     reports = []
     tms = Benchmark::measure do
       dir = ENV.fetch("dir", "/jda")
+      persist = ENV.fetch("persist") { false }
       skus = Jda::Filter::new(name: "skus", index: 0, matchers: ENV.fetch("skus", ""))
       stores = Jda::Filter::new(name: "strores", index: 1, matchers: ENV.fetch("stores", ""))
       md = Jda::Filter::new(name: "md", index: 14, matchers: ENV.fetch("md", ""))
-      parser = Jda::Parser::new(dir: dir, filters: [skus, stores, md])
-      reports = parser.report
-      puts reports.map(&:header)
+      parser = Jda::Parser::new(dir: dir, filters: [skus, stores, md], persist: persist)
+      parser.exec
     end
     puts "Parsing completed in #{tms.real.round(9)}s"
-    
-    puts "Generate reports? [y/n]"
-    answer = STDIN.gets.chomp
-    if answer.match(/Y/i)
-      reports.each(&:write) 
-      puts "Check created reports at: \"./reports\""
-    end
   end
 
   desc "Clean created reports"
