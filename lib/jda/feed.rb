@@ -9,7 +9,7 @@ module Jda
 
     class InvalidTGZError < ArgumentError; end
 
-    def initialize(name:)
+    def initialize(name)
       @name = name
     end
 

@@ -6,11 +6,11 @@ module Jda
   class Parser
     class InvalidFeedPath < ArgumentError; end
 
-    def initialize(dir:, filters:, persist: false)
-      fail InvalidFeedPath unless File.exists?(dir)
-      @dir = dir
-      @filters = remove_empty(filters)
-      @persist = persist
+    def initialize(options = {})
+      @dir = options.fetch(:dir) { fail ArgumentError, "missing feeds directory" } 
+      @filters = remove_empty(options[:filters])
+      @persist = options.fetch(:persist) { false }
+      check_dir
     end
 
     def exec
@@ -21,6 +21,10 @@ module Jda
     end
 
     private
+
+    def check_dir
+      fail InvalidFeedPath unless File.exists?(@dir)
+    end
 
     def report(feed)
       fork do
@@ -37,7 +41,7 @@ module Jda
     def feeds
       @feeds ||= Dir["#{@dir}/*"]
         .select { |f| File.file?(f) }
-        .map! { |name| Feed::new(name: name) }
+        .map! { |name| Feed::new(name) }
     end
 
     def remove_empty(filters)

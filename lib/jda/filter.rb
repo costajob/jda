@@ -1,9 +1,9 @@
 module Jda
   class Filter
-    def initialize(name:, index:, matchers:)
-      @name = name
-      @index = index.to_i
-      @matchers = fetch_matchers(matchers)
+    def initialize(options = {})
+      @name = options.fetch(:name) { fail ArgumentError, "missing name" }
+      @index = options[:index].to_i
+      @matchers = fetch_matchers(options[:matchers])
     end
 
     def match?(row)

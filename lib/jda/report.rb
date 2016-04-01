@@ -2,9 +2,9 @@ require "csv"
 
 module Jda
   class Report
-    def initialize(name:, data:)
-      @name = name
-      @data = data
+    def initialize(options = {})
+      @name = options.fetch(:name) { fail ArgumentError, "missing name" }
+      @data = options.fetch(:data) { fail ArgumentError, "missing data" }
     end
 
     def header

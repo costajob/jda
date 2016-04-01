@@ -2,7 +2,7 @@ require "benchmark"
 require "./lib/jda/parser"
 
 namespace :jda do
-  desc "Create a report by reading JDA files into the specified folder (default to root=/jda), by filtering basing on skus, stores and MD flag"
+  desc "Create a report by reading JDA files into the specified folder (default to /jda), by filtering basing on skus, stores and MD flag"
   task :report do
     reports = []
     tms = Benchmark::measure do

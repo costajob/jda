@@ -2,8 +2,8 @@ require "test_helper"
 require "jda/feed"
 
 describe Jda::Feed do
-  let(:gz) { Jda::Feed::new(name: "/jda/ebuscz-20160112083201.tgz") }
-  let(:txt) { Jda::Feed::new(name: "/jda/ebuscz-import.txt") }
+  let(:gz) { Jda::Feed::new("/jda/ebuscz-20160112083201.tgz") }
+  let(:txt) { Jda::Feed::new("/jda/ebuscz-import.txt") }
 
   it "must get the basename" do
     gz.basename.must_equal "ebuscz-20160112083201"
