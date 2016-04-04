@@ -1,4 +1,4 @@
-require "test_helper"
+require "spec_helper"
 require "jda/parser"
 
 describe Jda::Parser do

@@ -1,4 +1,4 @@
-require "test_helper"
+require "spec_helper"
 require "jda/feed"
 
 describe Jda::Feed do
