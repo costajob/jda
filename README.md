@@ -39,15 +39,15 @@ The library uses Rake to provide a command line interface.
 #### Report
 Check JDA feeds into the /jda/finished folder, by filtering on specified skus, store IDs:
 ```ruby
-bundle exec rake jda:report dir=/jda/finished skus=806564619,805254740 stores=20201,20401,21501
+bundle exec rake jda:scanner dir=/jda/finished skus=806564619,805254740 stores=20201,20401,21501
 ```
 Check JDA feeds into the /jda default folder, by filtering by store ID and markdown flag:
 ```ruby
-bundle exec rake jda:report stores=21400 md=Y
+bundle exec rake jda:scanner stores=21400 md=Y
 ```
 Check JDA feeds into the /jda default folder, by filtering by markdown flag and persisting report on the ./reports folder:
 ```ruby
-bundle exec rake jda:report md=Y persist=Y
+bundle exec rake jda:scanner md=Y persist=Y
 ```
 #### Clean
 Clean the generated reports with the following command:

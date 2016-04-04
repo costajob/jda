@@ -1,10 +1,13 @@
-require "csv"
+require 'csv'
 
 module Jda
   class Report
+    REPORTS_PATH = File::expand_path("../../../reports/", __FILE__)
+
     def initialize(options = {})
       @name = options.fetch(:name) { fail ArgumentError, "missing name" }
       @data = options.fetch(:data) { fail ArgumentError, "missing data" }
+      @dir = options.fetch(:dir) { REPORTS_PATH }
     end
 
     def header
@@ -28,7 +31,7 @@ module Jda
     end
 
     def output
-      File.expand_path("../../../reports/#{@name}.csv", __FILE__)
+      File::join(@dir, "#{@name}.csv")
     end
   end
 end

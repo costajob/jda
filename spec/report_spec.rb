@@ -1,5 +1,5 @@
-require "spec_helper"
-require "jda/report"
+require 'spec_helper'
+require 'jda/report'
 
 describe Jda::Report do
   let(:row) { %Q{804019219  ,20401  ,"Geneve Rhone                  ",1        ,0        ,0        ,100  ,"HANDBAGS                 ",1       ,"246907CTA4G    ",1000  ,"0099","1000/ /NEW JACKIE MD SOFT DEER",2150.00        ," ",0       ,0      ,1}.split(",") }

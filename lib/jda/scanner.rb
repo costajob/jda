@@ -1,9 +1,9 @@
-require "jda/feed"
-require "jda/filter"
-require "jda/report"
+require 'jda/feed'
+require 'jda/filter'
+require 'jda/report'
 
 module Jda
-  class Parser
+  class Scanner
     class InvalidFeedPath < ArgumentError; end
 
     def initialize(options = {})
@@ -15,27 +15,23 @@ module Jda
 
     def exec
       feeds.each do |feed|
-        report(feed)
+        fork { yield(report(feed)) }
       end
       Process.waitall
+    end
+
+    def report(feed)
+      data = feed.read()
+      data.select! do |row|
+        @filters.all? { |filter| filter.match?(row) } 
+      end
+      Report::new(name: feed.basename, data: data)
     end
 
     private
 
     def check_dir
       fail InvalidFeedPath unless File.exists?(@dir)
-    end
-
-    def report(feed)
-      fork do
-        data = feed.read()
-        data.select! do |row|
-          @filters.all? { |filter| filter.match?(row) } 
-        end
-        report = Report::new(name: feed.basename, data: data)
-        puts report.header
-        report.write if @persist
-      end
     end
 
     def feeds
