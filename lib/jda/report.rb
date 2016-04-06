@@ -4,6 +4,8 @@ module Jda
   class Report
     REPORTS_PATH = File::expand_path("../../../reports/", __FILE__)
 
+    attr_reader :data
+
     def initialize(options = {})
       @name = options.fetch(:name) { fail ArgumentError, "missing name" }
       @data = options.fetch(:data) { fail ArgumentError, "missing data" }

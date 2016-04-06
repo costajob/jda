@@ -16,7 +16,7 @@ describe Jda::Feed do
   end
 
   it "must read CSV data" do
-    stubs = Stubs::new
+    stubs = Stubs::Feeds::new
     feed = Jda::Feed::new(stubs.ebuseu)
     data = feed.read
     data.must_be_instance_of Array

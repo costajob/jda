@@ -1,2 +1,2 @@
 require 'jda/version'
-require 'jda/parser'
+require 'jda/scanner'

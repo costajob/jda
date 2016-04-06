@@ -36,7 +36,7 @@ The library assumes you are going to filter JDA data by one of the following:
 ### Rake Task
 The library uses Rake to provide a command line interface.
 
-#### Report
+### Scanner
 Check JDA feeds into the /jda/finished folder, by filtering on specified skus, store IDs:
 ```ruby
 bundle exec rake jda:scanner dir=/jda/finished skus=806564619,805254740 stores=20201,20401,21501
@@ -49,13 +49,9 @@ Check JDA feeds into the /jda default folder, by filtering by markdown flag and 
 ```ruby
 bundle exec rake jda:scanner md=Y persist=Y
 ```
+
 #### Clean
 Clean the generated reports with the following command:
 ```ruby
 bundle exec rake jda:clean
 ```
-
-### Rewrite
-I've rewritten this library after completing the [GO version](https://github.com/costajob/jda-go), since using a different programming language leads me to a better design than the original version (more on the GO version README).  
-After the rewrite i also get some speed improvements, replacing threads (that in
-ruby are limited by GIL) and using processes to grant parallelism.
