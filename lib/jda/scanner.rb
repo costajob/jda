@@ -38,7 +38,7 @@ module Jda
     def report(feed)
       data = feed.read
       data.select! { |row| filters_match?(row) }
-      Report::new(name: feed.basename, data: data)
+      Report::new(:name => feed.basename, :data => data)
     end
 
     def filters_match?(row)

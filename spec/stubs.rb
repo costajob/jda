@@ -13,7 +13,7 @@ module Stubs
     attr_reader :dir
 
     def initialize
-      @dir = Dir.mktmpdir("/jda")
+      @dir = Dir.mktmpdir
       @timestamp = Time::now.strftime("%Y%m%d%H%M%S")
     end
 

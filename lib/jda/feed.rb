@@ -5,7 +5,7 @@ require 'rubygems/package'
 module Jda
   class Feed
     TGZ = %w[.tar.gz .tgz]
-    OPTIONS = { quote_char: '"', col_sep: ",", row_sep: :auto, encoding: "windows-1251:utf-8" }
+    OPTIONS = { :quote_char => '"', :col_sep => ",", :row_sep => :auto, :encoding => "windows-1251:utf-8" }
 
     class InvalidTGZError < ArgumentError; end
 
