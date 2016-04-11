@@ -1,9 +1,10 @@
 require 'zlib'
 require 'rubygems/package'
 require 'tmpdir'
+require 'stringio'
 
 module Stubs
-  DEV_NULL = File.open(File::NULL, "w")
+  TEST_IO = StringIO::new
 
   class Feeds
     READ_WRITE = 0666

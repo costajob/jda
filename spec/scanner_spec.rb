@@ -14,7 +14,7 @@ describe Jda::Scanner do
 
   it "must return a filtered report for each feed" do
     Stubs::Feeds::FILES.each { |name| Jda::Feed::new(stubs.send(name)) }
-    reports = scanner.call(Stubs::DEV_NULL)
+    reports = scanner.call(Stubs::TEST_IO)
     reports.each do |report|
       report.must_be_instance_of Jda::Report
       assert report.data.all? { |row| skus.matchers.include?(row[skus.index].strip) }
@@ -28,6 +28,6 @@ describe Jda::Scanner do
     any_instance_of(Jda::Report) do |klass|
       mock(klass).write
     end
-    scanner.call(Stubs::DEV_NULL)
+    scanner.call(Stubs::TEST_IO)
   end
 end

@@ -5,12 +5,18 @@ namespace :jda do
   task :scanner do
     dir = ENV.fetch("dir", "/jda")
     persist = ENV.fetch("persist") { false }
-    skus = Jda::Filter::new(name: "skus", index: 0, matchers: ENV.fetch("skus", ""))
-    stores = Jda::Filter::new(name: "strores", index: 1, matchers: ENV.fetch("stores", ""))
-    md = Jda::Filter::new(name: "md", index: 14, matchers: ENV.fetch("md", ""))
-    Jda::Scanner::new(dir: dir, 
-                      filters: [skus, stores, md], 
-                      persist: persist).call_in_parallel
+    skus = Jda::Filter::new(:name => "skus", 
+                            :index => 0, 
+                            :matchers => ENV.fetch("skus", ""))
+    stores = Jda::Filter::new(:name => "strores", 
+                              :index => 1, 
+                              :matchers => ENV.fetch("stores", ""))
+    md = Jda::Filter::new(:name => "md", 
+                          :index => 14, 
+                          :matchers => ENV.fetch("md", ""))
+    Jda::Scanner::new(:dir => dir, 
+                      :filters => [skus, stores, md], 
+                      :persist => persist).call_in_parallel
   end
 
   desc "Clean created reports"
