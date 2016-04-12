@@ -12,7 +12,7 @@ describe Jda::Feed do
   end
 
   it "must fail for non TGZ file" do
-    -> { txt.read() }.must_raise Jda::Feed::InvalidTGZError
+    Proc::new { txt.read() }.must_raise Jda::Feed::InvalidTGZError
   end
 
   it "must read CSV data" do
