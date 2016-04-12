@@ -50,9 +50,7 @@ module Jda
     end
 
     def feeds
-      @feeds ||= Dir["#{@dir}/*"]
-        .select { |f| File.file?(f) }
-        .map! { |name| Feed::new(name) }
+      @feeds ||= Dir["#{@dir}/*"].select { |f| File.file?(f) }.map! { |name| Feed::new(name) }
     end
 
     def remove_empty(filters)
