@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.summary = %q{JDA paring and utility libraries}
   s.homepage = "https://github.com/costajob/jda.git"
   s.license = "MIT"
-  s.required_ruby_version = ">= 1.8.7"
+  s.required_ruby_version = ">= 1.9.3"
   s.files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|s|features)/}) }
   s.bindir = "exe"
   s.executables = s.files.grep(%r{^exe/}) { |f| File.basename(f) }
@@ -20,5 +20,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rake", "~> 10.0"
   s.add_development_dependency "minitest"
   s.add_development_dependency "rr"
-  s.add_development_dependency "fastercsv" if RUBY_VERSION < "1.9.3"
 end

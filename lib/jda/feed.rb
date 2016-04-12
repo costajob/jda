@@ -1,6 +1,6 @@
 require 'zlib'
+require 'csv'
 require 'rubygems/package'
-require 'jda/csv'
 
 module Jda
   class Feed
