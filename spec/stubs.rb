@@ -19,27 +19,23 @@ module Stubs
 
     FILES.each do |name|
       define_method(name) do
-        path = tgz_path(name)
-        return tgz_path(name) if File::exist?(path)
-        create_tgz(name)
+        path = feed_path(name)
+        return feed_path(name) if File::exist?(path)
+        create(name)
         path
       end
     end
 
     private
 
-    def tgz_path(name)
-      "#{dir}/#{name}-#{@timestamp}.tgz"
+    def feed_path(name)
+      "#{dir}/#{name}-#{@timestamp}.txt"
     end
 
-    def create_tgz(name)
+    def create(name)
       data = send("#{name}_data")
-      File::open(tgz_path(name), "wb") do |f|
-        Zlib::GzipWriter::wrap(f) do |gz|
-          Gem::Package::TarWriter::new(gz) do |tar|
-            tar.add_file_simple("#{dir}/#{name}-#{@timestamp}-import.txt", READ_WRITE, data.length) { |txt| txt.write(data) }
-          end
-        end
+      File::open(feed_path(name), "wb") do |f|
+        f << data
       end
     end
 
