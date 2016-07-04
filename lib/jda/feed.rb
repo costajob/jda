@@ -18,11 +18,9 @@ module Jda
     end
 
     def read
-      data = []
-      File.open(@name, "rb") do |file|
-        data = CSV.parse(file, OPTIONS)
+      CSV.foreach(@name, OPTIONS) do |row|
+        yield(row)
       end
-      data
     end
   end
 end

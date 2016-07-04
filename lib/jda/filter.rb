@@ -1,30 +1,40 @@
 module Jda
-  class Filter
-    attr_reader :index, :matchers
+  module Filters
+    class Base
+      attr_reader :index, :matchers
 
-    def initialize(options = {})
-      @name = options.fetch(:name) { fail ArgumentError, "missing name" }
-      @index = options[:index].to_i
-      @matchers = fetch_matchers(options[:matchers])
+      def initialize(index, matchers = [])
+        @index = index.to_i
+        @matchers = matchers.to_a
+      end
+
+      def match?(row)
+        @matchers.include?(val(row))
+      end
+
+      private
+
+      def val(row)
+        row[@index].strip! || row[@index]
+      end
     end
 
-    def match?(row)
-      @matchers.include?(val(row))
+    class Sku < Base
+      def initialize(matchers)
+        super(0, matchers)
+      end
     end
 
-    def empty?
-      @matchers.empty?
+    class Store < Base
+      def initialize(matchers)
+        super(1, matchers)
+      end
     end
 
-    private
-
-    def val(row)
-      row[@index].strip! || row[@index]
-    end
-
-    def fetch_matchers(matchers)
-      return matchers.split(",").map!(&:strip) if matchers.respond_to?(:split)
-      Array(matchers)
+    class Sale < Base
+      def initialize
+        super(14, %w(Y))
+      end
     end
   end
 end

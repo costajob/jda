@@ -4,57 +4,41 @@ require 'jda/report'
 
 module Jda
   class Scanner
-    class InvalidFeedPath < ArgumentError; end
+    DEFAULT_PATH = File.expand_path("../../../samples", __FILE__)
 
-    def initialize(options = {})
-      @dir = options.fetch(:dir) { fail ArgumentError, "missing feeds directory" } 
-      @filters = remove_empty(options[:filters])
-      @persist = options.fetch(:persist) { false }
-      check_dir
+    attr_reader :results
+
+    def initialize(filters, dir = DEFAULT_PATH, out = StringIO.new)
+      @filters = filters
+      @dir = dir
+      @out = out
+      @results = Hash.new { |h,k| h[k] = [] }
     end
 
-    def call(out = STDOUT)
-      feeds.reduce([]) do |acc, feed|
-        acc << compute(feed, out)
+    def call
+      feeds.each do |feed|
+        compute(feed)
       end
     end
 
-    def call_in_parallel(out = STDOUT)
+    def parallel_call
       feeds.each do |feed|
-        fork { compute(feed, out) }
+        fork { compute(feed) }
       end
       Process::waitall
     end
 
     private
 
-    def compute(feed, out)
-      r = report(feed)
-      out.puts r.header
-      r.write if @persist
-      r
-    end
-
-    def report(feed)
-      data = feed.read
-      data.select! { |row| filters_match?(row) }
-      Report::new(:name => feed.basename, :data => data)
-    end
-
-    def filters_match?(row)
-      @filters.all? { |filter| filter.match?(row) }
-    end
-
-    def check_dir
-      fail InvalidFeedPath unless File.exists?(@dir)
+    def compute(feed)
+      feed.read do |row|
+        @results[feed.basename] << row if @filters.all? { |filter| filter.match?(row) }
+      end
+      Report.new(feed.basename, @results[feed.basename]).render(@out)
     end
 
     def feeds
       @feeds ||= Dir["#{@dir}/#{Feed.ext_pattern}"].map! { |name| Feed::new(name) }
-    end
-
-    def remove_empty(filters)
-      Array(filters).reject { |filter| filter.empty? }
     end
   end
 end
