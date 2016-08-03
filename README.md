@@ -49,9 +49,3 @@ Check JDA feeds into the /jda default folder, by filtering by markdown flag and 
 ```ruby
 bundle exec rake jda:scanner md=Y persist=Y
 ```
-
-#### Clean
-Clean the generated reports with the following command:
-```ruby
-bundle exec rake jda:clean
-```

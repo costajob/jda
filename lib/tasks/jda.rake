@@ -1,26 +1,14 @@
-require './lib/jda/scanner'
+require './lib/jda'
 
 namespace :jda do
   desc "Scan JDA files into the specified folder (default to /jda), by filtering data basing on skus, stores and MD flag, store report if specified"
   task :scanner do
+    filters = []
+    filters << Jda::Filters::new(ENV["skus"].to_a.split(",").map!(&:strip)) if ENV["skus"]
+    filters << Jda::Filters::Store.new(ENV["stores"].to_a.split(",").map!(&:strip)) if ENV["stores"]
+    filters << Jda::Filters::Sale.new if ENV["md"]
     dir = ENV.fetch("dir", "/jda")
-    persist = ENV.fetch("persist") { false }
-    skus = Jda::Filter::new(:name => "skus", 
-                            :index => 0, 
-                            :matchers => ENV.fetch("skus", ""))
-    stores = Jda::Filter::new(:name => "strores", 
-                              :index => 1, 
-                              :matchers => ENV.fetch("stores", ""))
-    md = Jda::Filter::new(:name => "md", 
-                          :index => 14, 
-                          :matchers => ENV.fetch("md", ""))
-    Jda::Scanner::new(:dir => dir, 
-                      :filters => [skus, stores, md], 
-                      :persist => persist).call_in_parallel
-  end
-
-  desc "Clean created reports"
-  task :clean do
-    Dir["#{File.expand_path("../../reports", __FILE__)}/*.csv"].each { |f| File.delete(f) }
+    next if filters.empty?
+    Jda::Scanner::new(filters, dir, STDOUT).parallel_call
   end
 end

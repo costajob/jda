@@ -1,33 +1,47 @@
 require 'spec_helper'
-require 'stubs'
 require 'jda/scanner'
 
 describe Jda::Scanner do
-  it "must raise an error for infalid JDA path" do
-    Proc::new { Jda::Scanner::new(:dir => "noent") }.must_raise Jda::Scanner::InvalidFeedPath
+  it 'must collect results with empty filters' do
+    scanner = Jda::Scanner.new([])
+    scanner.call
+    scanner.results["ebuskr.txt"].size.must_equal 30
+    scanner.results["ebuspf1.txt"].size.must_equal 24
   end
 
-  let(:stubs) { Stubs::Feeds::new }
-  let(:skus) { Jda::Filter::new(:name => "skus", :index => 0, :matchers => %w[806932926 807014019 800968215]) }
-  let(:md) { Jda::Filter::new(:name => "md", :index => 14, :matchers => %w[Y]) }
-  let(:scanner) { Jda::Scanner::new(:dir => stubs.dir, :filters => [skus, md]) }
-
-  it "must return a filtered report for each feed" do
-    Stubs::Feeds::FILES.each { |name| Jda::Feed::new(stubs.send(name)) }
-    reports = scanner.call(Stubs::TEST_IO)
-    reports.each do |report|
-      report.must_be_instance_of Jda::Report
-      assert report.data.all? { |row| skus.matchers.include?(row[skus.index].strip) }
-      assert report.data.all? { |row| md.matchers.include?(row[md.index]) }
-    end
+  it 'must collect results by sku filter' do
+    filters = [Jda::Filters::Sku.new(%w(804511615 806732962 800907730))]
+    scanner = Jda::Scanner.new(filters)
+    scanner.call
+    scanner.results["ebuskr.txt"].size.must_equal 3
+    scanner.results["ebuspf1.txt"].size.must_equal 2
   end
 
-  it "must call write if persist option is set" do
-    Jda::Feed::new(stubs.ebuseu)
-    scanner = Jda::Scanner::new(:dir => stubs.dir, :persist => true, :filters => [md])
-    any_instance_of(Jda::Report) do |klass|
-      mock(klass).write
-    end
-    scanner.call(Stubs::TEST_IO)
+  it 'must collect results by store filter' do
+    filters = [Jda::Filters::Store.new(%w(25008 25005 23017))]
+    scanner = Jda::Scanner.new(filters)
+    scanner.call
+    scanner.results["ebuskr.txt"].size.must_equal 7
+    scanner.results["ebuspf1.txt"].size.must_equal 3
+  end
+
+  it 'must collect results by sale filter' do
+    filters = [Jda::Filters::Sale.new]
+    scanner = Jda::Scanner.new(filters)
+    scanner.call
+    scanner.results["ebuskr.txt"].size.must_equal 2
+    scanner.results["ebuspf1.txt"].size.must_equal 1
+  end
+
+
+  it 'must collect results by combining filters' do
+    filters = []
+    filters << Jda::Filters::Sku.new(%w(804511615 806732962 800907730))
+    filters << Jda::Filters::Store.new(%w(25008 25005 23017))
+    filters << Jda::Filters::Sale.new
+    scanner = Jda::Scanner.new(filters)
+    scanner.call
+    scanner.results["ebuskr.txt"].size.must_equal 1
+    scanner.results["ebuspf1.txt"].size.must_equal 1
   end
 end

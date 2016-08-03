@@ -1,44 +1,26 @@
-require 'zlib'
 require 'csv'
-require 'rubygems/package'
 
 module Jda
   class Feed
-    TGZ = %w[.tar.gz .tgz]
     OPTIONS = { :quote_char => '"', :col_sep => ",", :row_sep => :auto, :encoding => "windows-1251:utf-8" }
+    VALID_EXTENSIONS = %w[.txt]
 
-    class InvalidTGZError < ArgumentError; end
+    def self.ext_pattern
+      "*{#{VALID_EXTENSIONS.join(",")}}"
+    end
 
     def initialize(name)
       @name = name
     end
 
     def basename
-      @basename ||= File.basename(@name, ext)
+      @basename ||= File.basename(@name)
     end
 
     def read
-      fail InvalidTGZError unless tgz?
-      data = []
-      File.open(@name, "rb") do |file|
-        Zlib::GzipReader.wrap(file) do |gz|
-          Gem::Package::TarReader.new(gz) do |tar|
-            csv = tar.each.first.read
-            data = CSV.parse(csv, OPTIONS)
-          end
-        end
+      CSV.foreach(@name, OPTIONS) do |row|
+        yield(row)
       end
-      data
-    end
-
-    private
-
-    def tgz?
-      TGZ.include?(ext)
-    end
-
-    def ext
-      @ext ||= File.extname(@name)
     end
   end
 end
